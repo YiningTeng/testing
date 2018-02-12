@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TextLife</title>
+	<script src='https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js'></script>
+	<script src='https://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js'></script>
+	<link rel='stylesheet' href='https://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.css'/>
+	<link href="https://fonts.googleapis.com/css?family=Overpass+Mono" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<style type="text/css">
+		body {
+			font-family: 'Overpass Mono', monospace;
+			font-size: 20px;
+			background-color: #FFE2E2;
+		}
+		#question {
+			text-align: center;
+			padding-top: 5px;
+			color: #1D2786;
+		}
+		#choices {
+			margin: auto;
+			margin-bottom: 20px;
+		}
+		.choice {
+			background-color: #8785A2;
+			color: #FFF07A;
+			display: none;
+		}
+		.choice:focus, .choice:hover, .choice:active {
+			background-color: #8785A2;
+			color: #FFF07A;
+			outline: none;
+		}
+		nav {
+			font-family: 'Oswald', sans-serif;
+		}
+		.navbar {
+			background-color: #FFC7C7;
+			border-color: #FFC7C7;
+			border-radius: 0;
+		}
+		#brand {
+			color: #011A27;
+		}
+		#rstrt_btn {
+			background-color: #FFC7C7;
+			color: #011A27;
+			border-color: white;
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar navbar-default">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" id="brand" href="https://yiningteng.github.io/LoveIsLove/">LoveYou</a>
+			</div>
+			<button class="btn btn-default navbar-btn" id="rstrt_btn" onclick="Init()">Restart</button>
+		</div>
+	</nav>
+
+	<div class="container">
+		<p id="question"></p>
+		<div id="choices-container">
+			<div id="choices">
+				<button class="btn btn-block choice" onclick="act(0)"></button>
+				<button class="btn btn-block choice" onclick="act(1)"></button>
+				<button class="btn btn-block choice" onclick="act(2)"></button>
+				<button class="btn btn-block choice" onclick="act(3)"></button>
+			</div>			
+		</div>
+	</div>
+	
+</body>
+<script type="text/javascript">
+	var story_data;
+	var now_uuid; // indicate which section of the story
+	$.getJSON("story.json", function(data){
+		story_data = data;
+		Init();
+	});
+	function JumpTo(_uuid) { // jump to a new section
+		now_uuid = _uuid;
+		$('#question').fadeOut(function(){
+			var question = story_data[_uuid].question
+			var question = question.replace(/\n/g, "<br\/>");
+			$('#question').html(question); // show the question
+			$('#question').fadeIn();
+		});
+		$('#choices').fadeOut(function(){
+			for (i = 0;i < 4;++i)
+				$('.choice').eq(i).css("display", "none");
+			for (i = 0;i < story_data[_uuid].choices.length;++i) { // show choices
+				$('.choice').eq(i).html(story_data[_uuid].choices[i]);
+				$('.choice').eq(i).css("display", "block");
+			}
+			$('#choices').fadeIn();
+		});
+	}
+	function act(which) { // Act according to the choice
+		JumpTo(story_data[now_uuid].destination[which]);
+	}
+	function Init() {// Initialize
+		JumpTo("020620181601"); 
+	}
+</script>
+</html>
